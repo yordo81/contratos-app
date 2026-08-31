@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ContratoResource\RelationManagers;
 
+use Filament\Actions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -80,12 +81,12 @@ class SuplementosRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\Action::make('download')
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
+                Actions\Action::make('download')
                     ->label('Descargar')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->url(fn ($record): string => $record->archivo_suplemento ? asset('storage/' . $record->archivo_suplemento) : '#')
@@ -93,8 +94,8 @@ class SuplementosRelationManager extends RelationManager
                     ->visible(fn ($record): bool => !empty($record->archivo_suplemento)),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
