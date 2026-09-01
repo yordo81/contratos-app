@@ -61,10 +61,14 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Tipo de Contrato</label>
-                            @if($contrato->tipo_contrato == 'Prestación de servicios')
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Prestación de servicios</span>
+                            @if($contrato->tipoContrato)
+                                @if($contrato->tipoContrato->nombre == 'Prestación de servicios')
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $contrato->tipoContrato->nombre }}</span>
+                                @else
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">{{ $contrato->tipoContrato->nombre }}</span>
+                                @endif
                             @else
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Compra venta</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Sin tipo</span>
                             @endif
                         </div>
                         <div>
@@ -89,7 +93,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Forma de Pago</label>
-                            <p class="text-gray-900">{{ $contrato->forma_pago }}</p>
+                            <p class="text-gray-900">{{ $contrato->formaPago?->nombre ?? 'Sin forma de pago' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de Firma</label>

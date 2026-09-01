@@ -9,12 +9,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ContratoPublicoController extends Controller
 {
-    /**
-     * Display a listing of contratos with search and filters.
-     */
     public function index(Request $request)
     {
-        $query = Contrato::query();
+        $query = Contrato::with(['tipoContrato', 'formaPago', 'suplementos']);
 
         // Búsqueda por texto general
         if ($search = $request->input('search')) {
@@ -25,9 +22,9 @@ class ContratoPublicoController extends Controller
             });
         }
 
-        // Filtro por tipo de contrato
-        if ($tipoContrato = $request->input('tipo_contrato')) {
-            $query->where('tipo_contrato', $tipoContrato);
+        // Filtro por tipo de contrato (ahora por ID)
+        if ($tipoContratoId = $request->input('tipo_contrato_id')) {
+            $query->where('tipo_contrato_id', $tipoContratoId);
         }
 
         // Filtro por dictamen
@@ -35,9 +32,9 @@ class ContratoPublicoController extends Controller
             $query->where('dictamen', $dictamen);
         }
 
-        // Filtro por forma de pago
-        if ($formaPago = $request->input('forma_pago')) {
-            $query->where('forma_pago', $formaPago);
+        // Filtro por forma de pago (ahora por ID)
+        if ($formaPagoId = $request->input('forma_pago_id')) {
+            $query->where('forma_pago_id', $formaPagoId);
         }
 
         // Filtro por rango de fechas de firma
@@ -49,24 +46,18 @@ class ContratoPublicoController extends Controller
             $query->whereDate('fecha_firma', '<=', $fechaHasta);
         }
 
-        $contratos = $query->with('suplementos')->latest('fecha_firma')->paginate(15)->withQueryString();
+        $contratos = $query->latest('fecha_firma')->paginate(15)->withQueryString();
 
         return view('contratos.index', compact('contratos'));
     }
 
-    /**
-     * Display the specified contrato.
-     */
     public function show(Contrato $contrato)
     {
-        $contrato->load('suplementos');
+        $contrato->load(['tipoContrato', 'formaPago', 'suplementos']);
 
         return view('contratos.show', compact('contrato'));
     }
 
-    /**
-     * Download the contrato PDF file.
-     */
     public function downloadContrato(Contrato $contrato): Response
     {
         if (!$contrato->archivo_contrato) {
@@ -84,9 +75,6 @@ class ContratoPublicoController extends Controller
         return Storage::disk('public')->download($path, $filename);
     }
 
-    /**
-     * Download the suplemento PDF file.
-     */
     public function downloadSuplemento($suplementoId): Response
     {
         $suplemento = \App\Models\Suplemento::findOrFail($suplementoId);

@@ -55,12 +55,13 @@
                 {{-- Filters --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label for="tipo_contrato" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Contrato</label>
-                        <select name="tipo_contrato" id="tipo_contrato"
+                        <label for="tipo_contrato_id" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Contrato</label>
+                        <select name="tipo_contrato_id" id="tipo_contrato_id"
                             class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                             <option value="">Todos</option>
-                            <option value="Prestación de servicios" {{ request('tipo_contrato') == 'Prestación de servicios' ? 'selected' : '' }}>Prestación de servicios</option>
-                            <option value="Compra venta" {{ request('tipo_contrato') == 'Compra venta' ? 'selected' : '' }}>Compra venta</option>
+                            @foreach(\App\Models\TipoContrato::where('activo', true)->orderBy('nombre')->get() as $tipo)
+                                <option value="{{ $tipo->id }}" {{ request('tipo_contrato_id') == $tipo->id ? 'selected' : '' }}>{{ $tipo->nombre }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -77,16 +78,13 @@
                     </div>
 
                     <div>
-                        <label for="forma_pago" class="block text-sm font-medium text-gray-700 mb-1">Forma de Pago</label>
-                        <select name="forma_pago" id="forma_pago"
+                        <label for="forma_pago_id" class="block text-sm font-medium text-gray-700 mb-1">Forma de Pago</label>
+                        <select name="forma_pago_id" id="forma_pago_id"
                             class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                             <option value="">Todas</option>
-                            <option value="Transferencia bancaria" {{ request('forma_pago') == 'Transferencia bancaria' ? 'selected' : '' }}>Transferencia bancaria</option>
-                            <option value="Efectivo" {{ request('forma_pago') == 'Efectivo' ? 'selected' : '' }}>Efectivo</option>
-                            <option value="Cheque" {{ request('forma_pago') == 'Cheque' ? 'selected' : '' }}>Cheque</option>
-                            <option value="Tarjeta de crédito" {{ request('forma_pago') == 'Tarjeta de crédito' ? 'selected' : '' }}>Tarjeta de crédito</option>
-                            <option value="Tarjeta de débito" {{ request('forma_pago') == 'Tarjeta de débito' ? 'selected' : '' }}>Tarjeta de débito</option>
-                            <option value="Otro" {{ request('forma_pago') == 'Otro' ? 'selected' : '' }}>Otro</option>
+                            @foreach(\App\Models\FormaPago::where('activo', true)->orderBy('nombre')->get() as $forma)
+                                <option value="{{ $forma->id }}" {{ request('forma_pago_id') == $forma->id ? 'selected' : '' }}>{{ $forma->nombre }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -153,13 +151,19 @@
                                         <div class="text-sm font-medium text-gray-900">{{ $contrato->proveedor_cliente }}</div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if($contrato->tipo_contrato == 'Prestación de servicios')
-                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                Prestación de servicios
-                                            </span>
+                                        @if($contrato->tipoContrato)
+                                            @if($contrato->tipoContrato->nombre == 'Prestación de servicios')
+                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {{ $contrato->tipoContrato->nombre }}
+                                                </span>
+                                            @else
+                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                                    {{ $contrato->tipoContrato->nombre }}
+                                                </span>
+                                            @endif
                                         @else
-                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                                                Compra venta
+                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                Sin tipo
                                             </span>
                                         @endif
                                     </td>
