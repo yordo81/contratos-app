@@ -128,14 +128,6 @@ class ContratoResource extends Resource
                             ->required()
                             ->native(false),
 
-                        Forms\Components\DatePicker::make('fecha_inicio_vigencia')
-                            ->label('Inicio de Vigencia')
-                            ->hint('Se establece automáticamente como la fecha de firma')
-                            ->hintIcon('heroicon-o-information-circle')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->native(false),
-
                         Forms\Components\DatePicker::make('fecha_fin_vigencia')
                             ->label('Fin de Vigencia')
                             ->nullable()
@@ -208,11 +200,6 @@ class ContratoResource extends Resource
 
                 Tables\Columns\TextColumn::make('fecha_firma')
                     ->label('Fecha Firma')
-                    ->date('d/m/Y')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('fecha_inicio_vigencia')
-                    ->label('Inicio Vigencia')
                     ->date('d/m/Y')
                     ->sortable(),
 

@@ -112,7 +112,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de Inicio</label>
-                            <p class="text-gray-900">{{ $contrato->fecha_inicio_vigencia ? $contrato->fecha_inicio_vigencia->format('d/m/Y') : 'No especificada' }}</p>
+                            <p class="text-gray-900">{{ $contrato->fecha_firma ? $contrato->fecha_firma->format('d/m/Y') : 'No especificada' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-500 mb-1">Fecha de Fin</label>
@@ -165,9 +165,14 @@
                                             <h3 class="text-sm font-medium text-gray-900">
                                                 Suplemento {{ $suplemento->numero_suplemento }}
                                             </h3>
-                                            @if($suplemento->fecha)
-                                                <p class="text-xs text-gray-500 mt-1">{{ $suplemento->fecha->format('d/m/Y') }}</p>
-                                            @endif
+                                            <div class="flex items-center gap-3 mt-1">
+                                                @if($suplemento->fecha_firma)
+                                                    <p class="text-xs text-gray-500">Firma: {{ $suplemento->fecha_firma->format('d/m/Y') }}</p>
+                                                @endif
+                                                @if($suplemento->fecha_fin_vigencia)
+                                                    <p class="text-xs text-gray-500">Vigencia hasta: {{ $suplemento->fecha_fin_vigencia->format('d/m/Y') }}</p>
+                                                @endif
+                                            </div>
                                             @if($suplemento->descripcion)
                                                 <p class="text-xs text-gray-600 mt-1 line-clamp-2">{{ $suplemento->descripcion }}</p>
                                             @endif

@@ -145,13 +145,13 @@ class ContractStatsWidget extends StatsOverviewWidget
         // Vigentes uses its own date logic (based on vigencia, not firma)
         $vigentesQuery = Contrato::query();
         if ($this->fechaDesde) {
-            $vigentesQuery->whereDate('fecha_inicio_vigencia', '>=', $this->fechaDesde);
+            $vigentesQuery->whereDate('fecha_firma', '>=', $this->fechaDesde);
         }
         if ($this->fechaHasta) {
-            $vigentesQuery->whereDate('fecha_inicio_vigencia', '<=', $this->fechaHasta);
+            $vigentesQuery->whereDate('fecha_firma', '<=', $this->fechaHasta);
         }
         $vigentes = $vigentesQuery
-            ->whereDate('fecha_inicio_vigencia', '<=', Carbon::now())
+            ->whereDate('fecha_firma', '<=', Carbon::now())
             ->where(function ($query) {
                 $query->whereNull('fecha_fin_vigencia')
                     ->orWhereDate('fecha_fin_vigencia', '>=', Carbon::now());

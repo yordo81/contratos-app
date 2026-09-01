@@ -16,7 +16,6 @@ class Contrato extends Model
         'dictamen',
         'forma_pago_id',
         'fecha_firma',
-        'fecha_inicio_vigencia',
         'fecha_fin_vigencia',
         'observaciones',
         'archivo_contrato',
@@ -26,21 +25,8 @@ class Contrato extends Model
     {
         return [
             'fecha_firma' => 'date',
-            'fecha_inicio_vigencia' => 'date',
             'fecha_fin_vigencia' => 'date',
         ];
-    }
-
-    /**
-     * Auto-set fecha_inicio_vigencia to fecha_firma when saving.
-     */
-    protected static function booted(): void
-    {
-        static::saving(function (Contrato $contrato) {
-            if ($contrato->fecha_firma && !$contrato->fecha_inicio_vigencia) {
-                $contrato->fecha_inicio_vigencia = $contrato->fecha_firma;
-            }
-        });
     }
 
     public function tipoContrato(): BelongsTo

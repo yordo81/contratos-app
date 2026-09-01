@@ -190,10 +190,10 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900">
-                                            @if($contrato->fecha_inicio_vigencia && $contrato->fecha_fin_vigencia)
-                                                {{ $contrato->fecha_inicio_vigencia->format('d/m/Y') }} - {{ $contrato->fecha_fin_vigencia->format('d/m/Y') }}
-                                            @elseif($contrato->fecha_inicio_vigencia)
-                                                Desde {{ $contrato->fecha_inicio_vigencia->format('d/m/Y') }}
+                                            @if($contrato->fecha_firma && $contrato->fecha_fin_vigencia)
+                                                {{ $contrato->fecha_firma->format('d/m/Y') }} - {{ $contrato->fecha_fin_vigencia->format('d/m/Y') }}
+                                            @elseif($contrato->fecha_firma)
+                                                Desde {{ $contrato->fecha_firma->format('d/m/Y') }}
                                             @else
                                                 -
                                             @endif
