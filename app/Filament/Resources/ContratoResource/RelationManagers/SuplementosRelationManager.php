@@ -16,6 +16,30 @@ class SuplementosRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'numero_suplemento';
 
+    // ── Authorization ──────────────────────────────────────────────────────
+
+    public function canCreate(): bool
+    {
+        return auth()->user()?->canEdit() ?? false;
+    }
+
+    public function canEdit($record): bool
+    {
+        return auth()->user()?->canEdit() ?? false;
+    }
+
+    public function canDelete($record): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
+    public function canDeleteAny(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
+    // ── Form ───────────────────────────────────────────────────────────────
+
     public function form(Schema $schema): Schema
     {
         return $schema

@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ContratoResource\Pages;
 use App\Models\Contrato;
+use App\Models\FormaPago;
+use App\Models\TipoContrato;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Schemas\Components\Section;
@@ -42,6 +44,35 @@ class ContratoResource extends Resource
         return 'Gestión de Contratos';
     }
 
+    // ── Authorization ──────────────────────────────────────────────────────
+
+    public static function canAccess(): bool
+    {
+        return true; // All authenticated users can view contracts
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->canEdit() ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()?->canEdit() ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->isAdmin() ?? false;
+    }
+
+    // ── Form ───────────────────────────────────────────────────────────────
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -56,12 +87,11 @@ class ContratoResource extends Resource
                             ->maxLength(255)
                             ->placeholder('Nombre del proveedor o cliente'),
 
-                        Forms\Components\Select::make('tipo_contrato')
+                        Forms\Components\Select::make('tipo_contrato_id')
                             ->label('Tipo de Contrato')
-                            ->options([
-                                'Prestación de servicios' => 'Prestación de servicios',
-                                'Compra venta' => 'Compra venta',
-                            ])
+                            ->options(fn () => TipoContrato::where('activo', true)->pluck('nombre', 'id'))
+                            ->searchable()
+                            ->preload()
                             ->required(),
 
                         Forms\Components\TextInput::make('numero_contrato_proveedor_cliente')
@@ -80,16 +110,11 @@ class ContratoResource extends Resource
                             ])
                             ->nullable(),
 
-                        Forms\Components\Select::make('forma_pago')
+                        Forms\Components\Select::make('forma_pago_id')
                             ->label('Forma de Pago')
-                            ->options([
-                                'Transferencia bancaria' => 'Transferencia bancaria',
-                                'Efectivo' => 'Efectivo',
-                                'Cheque' => 'Cheque',
-                                'Tarjeta de crédito' => 'Tarjeta de crédito',
-                                'Tarjeta de débito' => 'Tarjeta de débito',
-                                'Otro' => 'Otro',
-                            ])
+                            ->options(fn () => FormaPago::where('activo', true)->pluck('nombre', 'id'))
+                            ->searchable()
+                            ->preload()
                             ->required(),
                     ])
                     ->columns(2),
@@ -105,14 +130,16 @@ class ContratoResource extends Resource
 
                         Forms\Components\DatePicker::make('fecha_inicio_vigencia')
                             ->label('Inicio de Vigencia')
-                            ->nullable()
+                            ->hint('Se establece automáticamente como la fecha de firma')
+                            ->hintIcon('heroicon-o-information-circle')
+                            ->disabled()
+                            ->dehydrated(false)
                             ->native(false),
 
                         Forms\Components\DatePicker::make('fecha_fin_vigencia')
                             ->label('Fin de Vigencia')
                             ->nullable()
-                            ->native(false)
-                            ->afterOrEqual('fecha_inicio_vigencia'),
+                            ->native(false),
 
                         Forms\Components\Textarea::make('objeto_contrato')
                             ->label('Objeto del Contrato')
@@ -131,7 +158,7 @@ class ContratoResource extends Resource
                             ->disk('public')
                             ->directory('contratos')
                             ->acceptedFileTypes(['application/pdf'])
-                            ->maxSize(10240) // 10MB
+                            ->maxSize(10240)
                             ->downloadable()
                             ->previewable()
                             ->columnSpanFull(),
@@ -149,10 +176,10 @@ class ContratoResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tipo_contrato')
+                Tables\Columns\TextColumn::make('tipoContrato.nombre')
                     ->label('Tipo')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'Prestación de servicios' => 'info',
                         'Compra venta' => 'warning',
                         default => 'gray',
@@ -175,7 +202,7 @@ class ContratoResource extends Resource
                     })
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('forma_pago')
+                Tables\Columns\TextColumn::make('formaPago.nombre')
                     ->label('Forma de Pago')
                     ->sortable(),
 
@@ -201,12 +228,17 @@ class ContratoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('tipo_contrato')
+                Tables\Filters\SelectFilter::make('tipo_contrato_id')
                     ->label('Tipo de Contrato')
-                    ->options([
-                        'Prestación de servicios' => 'Prestación de servicios',
-                        'Compra venta' => 'Compra venta',
-                    ]),
+                    ->options(fn () => TipoContrato::pluck('nombre', 'id'))
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('forma_pago_id')
+                    ->label('Forma de Pago')
+                    ->options(fn () => FormaPago::pluck('nombre', 'id'))
+                    ->searchable()
+                    ->preload(),
 
                 Tables\Filters\SelectFilter::make('dictamen')
                     ->label('Dictamen')
