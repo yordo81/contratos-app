@@ -14,7 +14,8 @@ class Suplemento extends Model
         'contrato_id',
         'numero_suplemento',
         'descripcion',
-        'fecha',
+        'fecha_firma',
+        'fecha_fin_vigencia',
         'archivo_suplemento',
     ];
 
@@ -24,7 +25,8 @@ class Suplemento extends Model
     protected function casts(): array
     {
         return [
-            'fecha' => 'date',
+            'fecha_firma' => 'date',
+            'fecha_fin_vigencia' => 'date',
         ];
     }
 

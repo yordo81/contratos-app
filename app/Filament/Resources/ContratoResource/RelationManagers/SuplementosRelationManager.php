@@ -49,15 +49,26 @@ class SuplementosRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\DatePicker::make('fecha')
-                    ->label('Fecha del Suplemento')
-                    ->nullable()
+                Forms\Components\DatePicker::make('fecha_firma')
+                    ->label('Fecha de Firma')
+                    ->required()
                     ->native(false),
+
+                Forms\Components\DatePicker::make('fecha_fin_vigencia')
+                    ->label('Fin de Vigencia')
+                    ->nullable()
+                    ->native(false)
+                    ->rules([fn ($state, $get) => function ($attribute, $value, $fail) {
+                        if ($value && $get('fecha_firma') && $value < $get('fecha_firma')) {
+                            $fail('La fecha de fin de vigencia debe ser posterior a la fecha de firma.');
+                        }
+                    }]),
 
                 Forms\Components\Textarea::make('descripcion')
                     ->label('Descripcion')
                     ->nullable()
-                    ->rows(3),
+                    ->rows(3)
+                    ->columnSpanFull(),
 
                 Forms\Components\FileUpload::make('archivo_suplemento')
                     ->label('Archivo PDF del Suplemento')
@@ -66,7 +77,8 @@ class SuplementosRelationManager extends RelationManager
                     ->acceptedFileTypes(['application/pdf'])
                     ->maxSize(10240)
                     ->downloadable()
-                    ->previewable(),
+                    ->previewable()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -80,10 +92,16 @@ class SuplementosRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('fecha')
-                    ->label('Fecha')
+                Tables\Columns\TextColumn::make('fecha_firma')
+                    ->label('Fecha Firma')
                     ->date('d/m/Y')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('fecha_fin_vigencia')
+                    ->label('Fin Vigencia')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('descripcion')
                     ->label('Descripcion')
